@@ -102,6 +102,6 @@ docker compose exec api python -c "import urllib.request; print(urllib.request.u
 
 Pulling a model is a later step (`docker compose exec ollama ollama pull <model>`).
 
-## Later: Windows server at 192.168.0.45
+## Later: Windows server at x.x.x.x
 
-Use the same Docker Compose stack on that machine. Bindings already listen on `0.0.0.0` inside the containers, so LAN clients can use `http://192.168.0.45:8140` once Docker Desktop is running there. Change `API_PORT` in `.env` if that host port is taken.
+Use the same Docker Compose stack on that machine. Bindings already listen on `0.0.0.0` inside the containers, so LAN clients can use `http://x.x.x.x:8140` once Docker Desktop is running there. Change `API_PORT` in `.env` if that host port is taken.
