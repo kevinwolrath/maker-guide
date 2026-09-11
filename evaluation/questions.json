@@ -1,0 +1,32 @@
+[
+  {
+    "question": "How can multiple colours be used to create a marble effect?",
+    "expected_concepts": ["separate colours", "pour", "swirl"],
+    "expected_source_document": "casting-guide.pdf"
+  },
+  {
+    "question": "How do I create a three colour swirl in epoxy resin dice?",
+    "expected_concepts": ["pour", "swirl", "colours"],
+    "expected_source_document": "resin-guide.txt",
+    "material": "Epoxy Resin",
+    "category": "resin-casting"
+  },
+  {
+    "question": "How do I create a marble effect?",
+    "expected_concepts": ["pour", "fold", "pigment"],
+    "expected_source_document": "ac100-marble.txt",
+    "material": "Jesmonite AC100",
+    "category": "casting"
+  },
+  {
+    "question": "How can I reduce bubbles when pouring resin dice?",
+    "expected_concepts": ["pressure pot", "bubbles"],
+    "expected_source_document": "resin-guide.txt",
+    "category": "resin-casting"
+  },
+  {
+    "question": "What PPE should I wear when handling uncured epoxy resin?",
+    "expected_concepts": ["gloves", "ventilat"],
+    "expected_source_document": "resin-guide.txt"
+  }
+]

@@ -1,0 +1,51 @@
+services:
+  api:
+    build: .
+    ports:
+      - "${API_PORT:-8140}:8000"
+    environment:
+      APP_NAME: ${APP_NAME:-MakerGuide}
+      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://makerguide:makerguide@postgres:5432/makerguide}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://ollama:11434}
+      EMBEDDING_DIMENSION: ${EMBEDDING_DIMENSION:-768}
+      EMBEDDING_MODEL: ${EMBEDDING_MODEL:-nomic-embed-text}
+      OLLAMA_LLM_MODEL: ${OLLAMA_LLM_MODEL:-gpt-oss:20b}
+      OLLAMA_LLM_TIMEOUT_SECONDS: ${OLLAMA_LLM_TIMEOUT_SECONDS:-600}
+      RAG_TOP_K: ${RAG_TOP_K:-5}
+      CONVERSATION_WINDOW_MESSAGES: ${CONVERSATION_WINDOW_MESSAGES:-6}
+      CONVERSATION_MESSAGE_MAX_CHARS: ${CONVERSATION_MESSAGE_MAX_CHARS:-400}
+      CHUNK_SIZE: ${CHUNK_SIZE:-800}
+      CHUNK_OVERLAP: ${CHUNK_OVERLAP:-150}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: pgvector/pgvector:pg16
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-makerguide}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-makerguide}
+      POSTGRES_DB: ${POSTGRES_DB:-makerguide}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U makerguide -d makerguide"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    restart: unless-stopped
+
+  ollama:
+    image: ollama/ollama
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+  ollama_data:
