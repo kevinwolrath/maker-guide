@@ -1,7 +1,8 @@
-"""Central embedding settings.
+"""Embedding vector dimension shared by the ORM model, migration 002 and the
+embedding service's response check.
 
-Import `EMBEDDING_DIMENSION` from this module only. Do not duplicate the
-integer in models, migrations, or services.
+The migration reads this value when it runs, so changing the embedding model
+or dimension after the database exists requires recreating the database.
 """
 
 from app.core.config import get_settings

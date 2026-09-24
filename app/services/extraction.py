@@ -6,7 +6,6 @@ from io import BytesIO
 from pathlib import Path
 
 from pypdf import PdfReader
-from pypdf.errors import PyPdfError
 
 from app.services.exceptions import ExtractionError, UnsupportedFileTypeError
 
@@ -56,9 +55,7 @@ def _extract_pdf(data: bytes) -> list[TextSegment]:
             if normalized:
                 segments.append(TextSegment(content=normalized, page_number=index))
         return segments
-    except PyPdfError as exc:
-        raise ExtractionError("Failed to extract text from the PDF.") from exc
-    except Exception as exc:
+    except Exception as exc:  # pypdf raises a variety of error types on malformed files
         raise ExtractionError("Failed to extract text from the PDF.") from exc
 
 

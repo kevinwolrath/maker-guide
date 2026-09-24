@@ -57,7 +57,11 @@ class ChunkingService:
 
             flushed = self._flush(current, current_page)
             raw_chunks.extend(flushed)
-            overlap = self._overlap_suffix(flushed[-1][0] if flushed else current)
+            # No overlap across a page break, so a chunk's page_number (used in
+            # citations) is accurate for all of its text.
+            overlap = ""
+            if not page_changed:
+                overlap = self._overlap_suffix(flushed[-1][0] if flushed else current)
             current = f"{overlap}\n\n{text}".strip() if overlap else text
             current_page = page_number
 

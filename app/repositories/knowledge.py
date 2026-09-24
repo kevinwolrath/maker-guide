@@ -52,6 +52,7 @@ class KnowledgeChunkRepository:
             .join(KnowledgeDocument)
             .options(joinedload(KnowledgeChunk.document))
             .where(KnowledgeChunk.embedding.is_not(None))
+            # Cosine distance is NaN for zero vectors; NaN != NaN filters them out.
             .where(distance == distance)
         )
         statement = _apply_metadata_filters(statement, filters)

@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import uuid
-
 from time import perf_counter
 
 from sqlalchemy.orm import Session
@@ -14,13 +13,13 @@ from app.schemas.ask import (
     AskResponse,
 )
 from app.schemas.knowledge import KnowledgeSearchResult
+from app.schemas.retrieval import RetrievalFilters
 from app.services.citations import (
     PreparedCitation,
     format_sources_block,
     prepare_citations,
     sanitize_answer,
 )
-from app.schemas.retrieval import RetrievalFilters
 from app.services.conversation import ConversationService
 from app.services.exceptions import AppError
 from app.services.llm import LlmService
@@ -123,6 +122,7 @@ class RagService:
                 AskDiagnosticChunk(
                     document_id=chunk.document_id,
                     title=chunk.title,
+                    filename=chunk.filename,
                     manufacturer=chunk.manufacturer,
                     material=chunk.material,
                     category=chunk.category,

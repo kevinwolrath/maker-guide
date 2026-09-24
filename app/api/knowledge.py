@@ -8,11 +8,11 @@ from app.schemas.knowledge import (
     KnowledgeSearchRequest,
     KnowledgeSearchResponse,
 )
+from app.schemas.retrieval import RetrievalFilters
 from app.services.exceptions import AppError
 from app.services.ingestion import DocumentIngestionService
 from app.services.knowledge import list_documents
 from app.services.search import KnowledgeSearchService
-from app.schemas.retrieval import RetrievalFilters
 
 router = APIRouter(prefix="/knowledge", tags=["knowledge"])
 
@@ -23,7 +23,7 @@ def get_knowledge_documents(db: Session = Depends(get_db)) -> list[KnowledgeDocu
 
 
 @router.post("/documents", response_model=KnowledgeIngestResponse)
-async def upload_knowledge_document(
+def upload_knowledge_document(
     file: UploadFile = File(...),
     title: str = Form(...),
     source_url: str | None = Form(default=None),
@@ -32,7 +32,9 @@ async def upload_knowledge_document(
     category: str | None = Form(default=None),
     db: Session = Depends(get_db),
 ) -> KnowledgeIngestResponse:
-    data = await file.read()
+    # Sync endpoint on purpose: ingestion makes blocking DB and embedding
+    # calls, so FastAPI runs it in its threadpool instead of the event loop.
+    data = file.file.read()
     try:
         return DocumentIngestionService(db).ingest(
             filename=file.filename or "upload",

@@ -1,4 +1,14 @@
-"""Lightweight RAG evaluation: retrieval hit rate and concept coverage."""
+"""Lightweight RAG evaluation against a running API.
+
+For each case in evaluation/questions.json:
+- calls /knowledge/search and checks whether the expected document's filename
+  appears in the top 1/3/5 results (retrieval hit rate);
+- calls /ask and checks which expected concept strings appear in the answer
+  text (case-insensitive substring match, excluding the appended Sources block).
+
+The expected source documents must already be ingested. Uses only the
+standard library so it can run from the host without the app's dependencies.
+"""
 
 from __future__ import annotations
 
@@ -33,7 +43,7 @@ def main() -> int:
     print(f"top-1 retrieval hit rate: {_pct(report['top_1_hit_rate'])}")
     print(f"top-3 retrieval hit rate: {_pct(report['top_3_hit_rate'])}")
     print(f"top-5 retrieval hit rate: {_pct(report['top_5_hit_rate'])}")
-    print(f"average retrieval score: {report['average_retrieval_score']:.4f}")
+    print(f"average top-1 similarity: {report['average_top_1_score']:.4f}")
     print(f"expected concept coverage: {_pct(report['expected_concept_coverage'])}")
     print()
     for row in per_case:
@@ -70,7 +80,9 @@ def evaluate_case(case: dict) -> dict:
     }
     ask_body = {key: value for key, value in ask_body.items() if value is not None}
     ask = _post("/ask", ask_body, timeout=ASK_TIMEOUT_SECONDS)
-    answer = ask.get("answer") or ""
+    # The API appends a "Sources:" block listing titles and metadata; exclude it
+    # so concept matches come from the generated answer only.
+    answer = (ask.get("answer") or "").split("\n\nSources:", 1)[0]
     found_concepts = [
         concept for concept in expected_concepts if concept.lower() in answer.lower()
     ]
@@ -98,7 +110,7 @@ def summarise(rows: list[dict]) -> dict:
         "top_1_hit_rate": sum(row["hit_at_1"] for row in rows) / count,
         "top_3_hit_rate": sum(row["hit_at_3"] for row in rows) / count,
         "top_5_hit_rate": sum(row["hit_at_5"] for row in rows) / count,
-        "average_retrieval_score": sum(row["top_score"] for row in rows) / count,
+        "average_top_1_score": sum(row["top_score"] for row in rows) / count,
         "expected_concept_coverage": sum(concept_ratios) / count,
     }
 
