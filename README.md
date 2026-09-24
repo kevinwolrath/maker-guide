@@ -135,7 +135,14 @@ For each question it reports:
 - **average top-1 similarity**: the mean score of the best-ranked chunk;
 - **concept coverage**: the fraction of expected keywords found in the `/ask` answer text (a simple case-insensitive substring check, not a semantic judgement).
 
-The source documents used by the evaluation are synthetic fixtures in `evaluation/fixtures/`, so the regression check is reproducible without third-party material. With the API and Ollama running, ingest them and run the evaluation with:\n\n```bash\npython scripts/ingest_evaluation.py\npython scripts/evaluate_rag.py\n```\n\nThe ingestion helper applies the metadata expected by `questions.json`. Re-running it creates duplicate documents because MakerGuide intentionally has no duplicate detection. The evaluation set is small (5 questions) and is meant as a regression check, not a benchmark.
+The source documents used by the evaluation are synthetic fixtures in `evaluation/fixtures/`, so the regression check is reproducible without third-party material. With the API and Ollama running, ingest them and run the evaluation with:
+
+```bash
+python scripts/ingest_evaluation.py
+python scripts/evaluate_rag.py
+```
+
+The ingestion helper applies the metadata expected by `questions.json`. Re-running it creates duplicate documents because MakerGuide intentionally has no duplicate detection. The evaluation set is small (5 questions) and is meant as a regression check, not a benchmark.
 
 ## Limitations
 
