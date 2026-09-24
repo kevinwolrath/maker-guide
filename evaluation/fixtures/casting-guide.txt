@@ -1,0 +1,5 @@
+Synthetic Casting Guide
+
+Marble effects can be created by preparing separate colours before the pour. Pour the separate colours into the mould in alternating streams, then use a clean tool to make a gentle swirl. Avoid over-mixing, which can blend the colours into one shade.
+
+This synthetic document exists only as a reproducible MakerGuide evaluation fixture.

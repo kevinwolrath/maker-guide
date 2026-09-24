@@ -2,7 +2,7 @@
   {
     "question": "How can multiple colours be used to create a marble effect?",
     "expected_concepts": ["separate colours", "pour", "swirl"],
-    "expected_source_document": "casting-guide.pdf"
+    "expected_source_document": "casting-guide.txt"
   },
   {
     "question": "How do I create a three colour swirl in epoxy resin dice?",

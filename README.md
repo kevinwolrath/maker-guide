@@ -74,7 +74,7 @@ curl -X POST http://localhost:8140/ask \
 
 ## Running it
 
-Requirements: Docker with Compose. Generation with `gpt-oss:20b` needs a machine with enough memory for a 20B model. The Compose Ollama service has no GPU configuration, so on CPU expect slow answers (the default LLM timeout is 600 s). A smaller model can be set with `OLLAMA_LLM_MODEL`.
+Requirements: Docker with Compose. For host-side development and tests, use Python 3.13 (the pinned `psycopg[binary]` dependency is not compatible with Python 3.14). Generation with `gpt-oss:20b` needs a machine with enough memory for a 20B model. The Compose Ollama service has no GPU configuration, so on CPU expect slow answers (the default LLM timeout is 600 s). A smaller model can be set with `OLLAMA_LLM_MODEL`.
 
 ```bash
 cp .env.example .env                      # Windows PowerShell: Copy-Item .env.example .env
@@ -116,12 +116,12 @@ All settings are environment variables (see `.env.example`; defaults are in `app
 **Unit tests** cover the parts of the pipeline that don't need external services: chunking (size limits, overlap, page boundaries), extraction (file-type detection, text normalisation and decoding) and citation handling (grouping, removing invented citations and URLs, the sources block). They don't need Postgres or Ollama.
 
 ```bash
-python -m venv .venv && . .venv/bin/activate   # Windows: .venv\Scripts\activate
+python3.13 -m venv .venv && . .venv/bin/activate   # Windows: py -3.13 -m venv .venv && .venv\Scripts\activate
 pip install -r requirements-dev.txt
 pytest
 ```
 
-There are no automated tests for the database queries, the Ollama clients or the API endpoints. Those were checked manually against the running stack.
+There are no automated database integration tests or live Ollama tests. A small API contract test exercises the `/ask` endpoint with the RAG service mocked; the database queries and live Ollama clients are checked manually against the running stack.
 
 **RAG evaluation.** `scripts/evaluate_rag.py` runs the cases in `evaluation/questions.json` against a running API. It uses only the Python standard library.
 
@@ -135,7 +135,7 @@ For each question it reports:
 - **average top-1 similarity**: the mean score of the best-ranked chunk;
 - **concept coverage**: the fraction of expected keywords found in the `/ask` answer text (a simple case-insensitive substring check, not a semantic judgement).
 
-The source documents the questions refer to (`casting-guide.pdf`, `resin-guide.txt`, `ac100-marble.txt`) are **not included in the repository**. Ingest them, with metadata matching the filters in `questions.json`, before running the evaluation. The evaluation set is small (5 questions) and is meant as a regression check, not a benchmark.
+The source documents used by the evaluation are synthetic fixtures in `evaluation/fixtures/`, so the regression check is reproducible without third-party material. With the API and Ollama running, ingest them and run the evaluation with:\n\n```bash\npython scripts/ingest_evaluation.py\npython scripts/evaluate_rag.py\n```\n\nThe ingestion helper applies the metadata expected by `questions.json`. Re-running it creates duplicate documents because MakerGuide intentionally has no duplicate detection. The evaluation set is small (5 questions) and is meant as a regression check, not a benchmark.
 
 ## Limitations
 
